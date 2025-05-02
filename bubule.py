@@ -33,11 +33,12 @@ def Ecran_principal():
     return screen
 
 def fenetre_principale(screen):# fenêtre du jeu
-
-    fenetre_largeur, fenetre_hauteur = 300, 900 # Dimensions de la fenêtre
-    fenetre_x, fenetre_y = 50, 100 # Position de la fenêtre
+    couleurs = definir_couleurs()
+    fenetre_largeur, fenetre_hauteur = 300, 900 
+    fenetre_x, fenetre_y = 50, 100
     fenetre_de_jeu = pygame.Surface((fenetre_largeur, fenetre_hauteur))
-    fenetre_de_jeu.fill("grey")
+    fenetre_de_jeu.fill(couleurs["grey"])
+    dessiner_boutons(fenetre_de_jeu)
     screen.blit(fenetre_de_jeu, (fenetre_x, fenetre_y))
     dessiner_boutons(fenetre_de_jeu)
 
@@ -48,14 +49,17 @@ def fenetre_principale(screen):# fenêtre du jeu
     # Dessiner les boutons
 
 def dessiner_boutons(fenetre_de_jeu):
+    couleur = definir_couleurs()
     bouton_largeur, bouton_hauteur, espacement = 80, 40, 20
+    
     bouton_troops = pygame.Rect(10,10, bouton_largeur, bouton_hauteur)
     bouton_props = pygame.Rect(10 + bouton_largeur + espacement, 10, bouton_largeur, bouton_hauteur)
     bouton_event = pygame.Rect(10 + 2 * (bouton_largeur + espacement), 10, bouton_largeur, bouton_hauteur)
+    
     font = pygame.font.Font(None, 36)  # Police par défaut, taille 36
-    pygame.draw.rect(fenetre_de_jeu, "blue", bouton_troops)  
-    pygame.draw.rect(fenetre_de_jeu, "green", bouton_props)  
-    pygame.draw.rect(fenetre_de_jeu, "red", bouton_event)
+    pygame.draw.rect(fenetre_de_jeu, couleur["blue"], bouton_troops)  
+    pygame.draw.rect(fenetre_de_jeu, couleur["green"], bouton_props)  
+    pygame.draw.rect(fenetre_de_jeu, couleur["red"], bouton_event)
     font = pygame.font.Font(None, 36)  # Police par défaut, taille 36
 
     text_troops = font.render("Troops", True, "white")
@@ -99,6 +103,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             running = False
+        #elif event.type == pygame.MOUSEBUTTONDOWN:
+            
 
     fenetre_principale(screen)  
 

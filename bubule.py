@@ -25,22 +25,23 @@ def definir_couleurs():
 # création de l'écran
 def Ecran_principal(): 
     pygame.init()
-    WIDTH, HEIGHT = 1900, 1060
+    WIDTH, HEIGHT = 1800, 1000
     couleur = definir_couleurs()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("Bubble Game")
     screen.fill(couleur["light_grey"])
     return screen
 
-def fenetre_principale(screen):# fenêtre du jeu
-    couleurs = definir_couleurs()
+def fenetre_principale(screen, fenetre_active, boutons, couleurs, font):
     fenetre_largeur, fenetre_hauteur = 300, 900 
     fenetre_x, fenetre_y = 50, 100
     fenetre_de_jeu = pygame.Surface((fenetre_largeur, fenetre_hauteur))
     fenetre_de_jeu.fill(couleurs["grey"])
-    dessiner_boutons(fenetre_de_jeu)
+    
+    
+
     screen.blit(fenetre_de_jeu, (fenetre_x, fenetre_y))
-    dessiner_boutons(fenetre_de_jeu)
+    
 
 
 
@@ -48,39 +49,23 @@ def fenetre_principale(screen):# fenêtre du jeu
 
     # Dessiner les boutons
 
-def dessiner_boutons(fenetre_de_jeu):
-    couleur = definir_couleurs()
+def creer_boutons():
     bouton_largeur, bouton_hauteur, espacement = 80, 40, 20
-    
-    bouton_troops = pygame.Rect(10,10, bouton_largeur, bouton_hauteur)
-    bouton_props = pygame.Rect(10 + bouton_largeur + espacement, 10, bouton_largeur, bouton_hauteur)
-    bouton_event = pygame.Rect(10 + 2 * (bouton_largeur + espacement), 10, bouton_largeur, bouton_hauteur)
-    
-    font = pygame.font.Font(None, 36)  # Police par défaut, taille 36
-    pygame.draw.rect(fenetre_de_jeu, couleur["blue"], bouton_troops)  
-    pygame.draw.rect(fenetre_de_jeu, couleur["green"], bouton_props)  
-    pygame.draw.rect(fenetre_de_jeu, couleur["red"], bouton_event)
-    font = pygame.font.Font(None, 36)  # Police par défaut, taille 36
+    boutons = {
+    "troops": pygame.Rect(10,10, bouton_largeur, bouton_hauteur),
+    "props": pygame.Rect(10 + bouton_largeur + espacement, 10, bouton_largeur, bouton_hauteur),
+    "event": pygame.Rect(10 + 2 * (bouton_largeur + espacement), 10, bouton_largeur, bouton_hauteur),
+    }
+    return boutons
 
-    text_troops = font.render("Troops", True, "white")
-    text_props = font.render("Props", True, "white")
-    text_event = font.render("Event", True, "white")
 
-    # Centrer le texte sur chaque bouton
-    text_rect_troops = text_troops.get_rect(center=(bouton_troops.centerx, bouton_troops.centery))
-    text_rect_props = text_props.get_rect(center=(bouton_props.centerx, bouton_props.centery))
-    text_rect_event = text_event.get_rect(center=(bouton_event.centerx, bouton_event.centery))
-
-    # Dessiner le texte sur les boutons
-    fenetre_de_jeu.blit(text_troops, text_rect_troops)
-    fenetre_de_jeu.blit(text_props, text_rect_props)
-    fenetre_de_jeu.blit(text_event, text_rect_event)
 
 def afficher_fenetre_troops():
+    couleur = definir_couleurs()
     options = ["Barbare", "Archer", "Mage", "Assassin"]
     for i, option in enumerate(options):
-        text = font.render(option, True, "black")
-        fenetre_de_jeu.blit(text, (100, 100 + i * 50))  # Espacement vertical entre les options
+        text = font.render(option, True, couleur["black"])
+        fenetre_de_jeu.blit(text, (100, 100 + i * 50))  
 
 def afficher_fenetre_props():
     text = font.render("Fenêtre Props", True, "black")
@@ -98,12 +83,25 @@ def afficher_fenetre_event():
 
 #Boucle principale //NOTE coucou je suis un commentaire
 screen = Ecran_principal()
+current_screen = "principal"  
 running = True
 while running:
     for event in pygame.event.get():
+        couleurs = definir_couleurs()
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             running = False
-        #elif event.type == pygame.MOUSEBUTTONDOWN:
+#        elif event.type == pygame.MOUSEBUTTONDOWN:
+#            if bouton_troops.collidepoint(event.pos):
+#                current_screen = "troops"
+#            elif bouton_props.collidepoint(event.pos):
+#                current_screen = "props"
+#            elif bouton_event.collidepoint(event.pos):
+#                current_screen = "event"
+
+        
+
+                
+
             
 
     fenetre_principale(screen)  

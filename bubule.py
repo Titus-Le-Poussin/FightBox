@@ -32,19 +32,22 @@ def Ecran_principal():
     return screen
 
 def fenetre_principale(screen, couleurs):
-    fenetre_largeur, fenetre_hauteur = 300, 900 
-    fenetre_x, fenetre_y = 50, 100
+    """Créer et dessiner la petite fenêtre sur le côté gauche."""
+    fenetre_largeur, fenetre_hauteur = 300, 900
+    fenetre_x, fenetre_y = 50, 50
     fenetre_de_jeu = pygame.Surface((fenetre_largeur, fenetre_hauteur))
     fenetre_de_jeu.fill(couleurs["grey"])
     screen.blit(fenetre_de_jeu, (fenetre_x, fenetre_y))
-    return fenetre_de_jeu
+    return fenetre_de_jeu, fenetre_x, fenetre_y
 
 def creer_boutons():
     return { 
         "troops": {"rect": pygame.Rect(10, 10, 80, 40), "content": fenetre_troops_options},
         "props": {"rect": pygame.Rect(10, 60, 80, 40), "content": fenetre_props_options},
         "event": {"rect": pygame.Rect(10, 110, 80, 40), "content": fenetre_event_options},
+        
     }
+    print ("Boutons créés")
 
 
 
@@ -54,20 +57,24 @@ def creer_boutons():
     # Dessiner la petite fenêtre sur l'écran principal
     screen.blit(petite_fenetre, (0, 0))
 
-def dessiner_boutons(fenetre_de_jeu, boutons, couleurs, font):
+def dessiner_boutons(fenetre_de_jeu, boutons, couleurs, font, offset_x, offset_y):
     for bouton, data in boutons.items():
-        pygame.draw.rect(fenetre_de_jeu, couleurs["blue"], data["rect"])
-        pygame.draw.rect(fenetre_de_jeu, couleurs["black"], data["rect"], 2)
-        text = font.render(bouton.capitalize(), True, couleurs["white"])
-        fenetre_de_jeu.blit(text, data["rect"].move(10, 10).topleft)
+        rect = data["rect"].move(offset_x, offset_y)  ## Déplacer le rectangle du bouton
+        pygame.draw.rect(fenetre_de_jeu, couleurs["blue"], data["rect"]) ## Dessiner le rectangle du bouton
+        pygame.draw.rect(fenetre_de_jeu, couleurs["black"], data["rect"], 2) ## Ajouter un contour noir pour rendre le bouton plus visible
+        text = font.render(bouton.capitalize(), True, couleurs["white"]) ## Dessiner le texte centré dans le bouton
+
+        text_rect = text.get_rect(center=data["rect"].center)
+        fenetre_de_jeu.blit(text, text_rect) ## Positionner le texte au centre du bouton
 
 
 def afficher_contenu(fenetre_de_jeu, boutons, fenetre_active, couleurs, font):
+    """Afficher le contenu correspondant au bouton actif."""
     if fenetre_active in boutons:
         contenu = boutons[fenetre_active]["content"]()
         for i, (nom, valeur) in enumerate(contenu.items()):
             text = font.render(f"{nom}: {valeur}", True, couleurs["black"])
-            fenetre_de_jeu.blit(text, (10, 150 + i * 50)) # Positionner le texte en dessous des boutons
+            fenetre_de_jeu.blit(text, (10, 150 + i * 50))  # Positionner le texte en dessous des boutons
 
 
 def fenetre_troops_options():
@@ -97,12 +104,14 @@ def main():
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 for bouton, data in boutons.items():
-                    if data["rect"].collidepoint(event.pos):
+                    # Vérifier si un bouton a été cliqué
+                    rect = data["rect"].move(offset_x, offset_y)
+                    if rect.collidepoint(event.pos):
                         fenetre_active = bouton
 
         screen.fill(couleur["light_grey"])
-        fenetre_principale(screen, couleur)
-        dessiner_boutons(screen, boutons, couleur, font)
+        fenetre_de_jeu, offset_x, offset_y = fenetre_principale(screen, couleur)
+        dessiner_boutons(screen, boutons, couleur, font, offset_x, offset_y)
         afficher_contenu(screen, boutons, fenetre_active, couleur, font)
 
         pygame.display.flip()

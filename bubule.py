@@ -25,88 +25,89 @@ def definir_couleurs():
 # création de l'écran
 def Ecran_principal(): 
     pygame.init()
-    WIDTH, HEIGHT = 1800, 1000
     couleur = definir_couleurs()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    screen = pygame.display.set_mode((1800, 1000))
     pygame.display.set_caption("Bubble Game")
     screen.fill(couleur["light_grey"])
     return screen
 
-def fenetre_principale(screen, fenetre_active, boutons, couleurs, font):
+def fenetre_principale(screen, couleurs):
     fenetre_largeur, fenetre_hauteur = 300, 900 
     fenetre_x, fenetre_y = 50, 100
     fenetre_de_jeu = pygame.Surface((fenetre_largeur, fenetre_hauteur))
     fenetre_de_jeu.fill(couleurs["grey"])
-    
-    
-
     screen.blit(fenetre_de_jeu, (fenetre_x, fenetre_y))
-    
-
-
-
-
-
-    # Dessiner les boutons
+    return fenetre_de_jeu
 
 def creer_boutons():
-    bouton_largeur, bouton_hauteur, espacement = 80, 40, 20
-    boutons = {
-    "troops": pygame.Rect(10,10, bouton_largeur, bouton_hauteur),
-    "props": pygame.Rect(10 + bouton_largeur + espacement, 10, bouton_largeur, bouton_hauteur),
-    "event": pygame.Rect(10 + 2 * (bouton_largeur + espacement), 10, bouton_largeur, bouton_hauteur),
+    return { 
+        "troops": {"rect": pygame.Rect(10, 10, 80, 40), "content": fenetre_troops_options},
+        "props": {"rect": pygame.Rect(10, 60, 80, 40), "content": fenetre_props_options},
+        "event": {"rect": pygame.Rect(10, 110, 80, 40), "content": fenetre_event_options},
     }
-    return boutons
 
 
 
-def afficher_fenetre_troops():
+
+
+
+    # Dessiner la petite fenêtre sur l'écran principal
+    screen.blit(petite_fenetre, (0, 0))
+
+def dessiner_boutons(fenetre_de_jeu, boutons, couleurs, font):
+    for bouton, data in boutons.items():
+        pygame.draw.rect(fenetre_de_jeu, couleurs["blue"], data["rect"])
+        pygame.draw.rect(fenetre_de_jeu, couleurs["black"], data["rect"], 2)
+        text = font.render(bouton.capitalize(), True, couleurs["white"])
+        fenetre_de_jeu.blit(text, data["rect"].move(10, 10).topleft)
+
+
+def afficher_contenu(fenetre_de_jeu, boutons, fenetre_active, couleurs, font):
+    if fenetre_active in boutons:
+        contenu = boutons[fenetre_active]["content"]()
+        for i, (nom, valeur) in enumerate(contenu.items()):
+            text = font.render(f"{nom}: {valeur}", True, couleurs["black"])
+            fenetre_de_jeu.blit(text, (10, 150 + i * 50)) # Positionner le texte en dessous des boutons
+
+
+def fenetre_troops_options():
+    return {"Barbare": 3, "Archer": 2, "Mage": 5, "Assassin": 1} 
+
+def fenetre_props_options():
+    return {"Potion": 10, "Piège": 5, "Bouclier": 2}
+
+def fenetre_event_options():
+    return {"Invasion": "Active", "Marché": "Ouvert", "Quête": "Disponible"}
+
+
+
+
+def main():
     couleur = definir_couleurs()
-    options = ["Barbare", "Archer", "Mage", "Assassin"]
-    for i, option in enumerate(options):
-        text = font.render(option, True, couleur["black"])
-        fenetre_de_jeu.blit(text, (100, 100 + i * 50))  
+    screen = Ecran_principal()
+    font = pygame.font.Font(None, 36)  
 
-def afficher_fenetre_props():
-    text = font.render("Fenêtre Props", True, "black")
-    fenetre_de_jeu.blit(text, (100, 100))
+    boutons = creer_boutons()
+    fenetre_active = "troops"  
 
-def afficher_fenetre_event():
-    text = font.render("Fenêtre Event", True, "black")
-    fenetre_de_jeu.blit(text, (100, 100))
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+                running = False
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                for bouton, data in boutons.items():
+                    if data["rect"].collidepoint(event.pos):
+                        fenetre_active = bouton
 
+        screen.fill(couleur["light_grey"])
+        fenetre_principale(screen, couleur)
+        dessiner_boutons(screen, boutons, couleur, font)
+        afficher_contenu(screen, boutons, fenetre_active, couleur, font)
 
-
-
-
-
-
-#Boucle principale //NOTE coucou je suis un commentaire
-screen = Ecran_principal()
-current_screen = "principal"  
-running = True
-while running:
-    for event in pygame.event.get():
-        couleurs = definir_couleurs()
-        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
-            running = False
-#        elif event.type == pygame.MOUSEBUTTONDOWN:
-#            if bouton_troops.collidepoint(event.pos):
-#                current_screen = "troops"
-#            elif bouton_props.collidepoint(event.pos):
-#                current_screen = "props"
-#            elif bouton_event.collidepoint(event.pos):
-#                current_screen = "event"
-
-        
-
-                
-
-            
-
-    fenetre_principale(screen)  
-
-    # Mettre à jour l'affichage
-    pygame.display.flip()
+        pygame.display.flip()
 
 pygame.quit()
+
+if __name__ == "__main__":
+    main()

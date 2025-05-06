@@ -43,8 +43,8 @@ def fenetre_principale(screen, couleurs):
 def creer_boutons():
     return { 
         "troops": {"rect": pygame.Rect(10, 10, 80, 40), "content": fenetre_troops_options},
-        "props": {"rect": pygame.Rect(10, 60, 80, 40), "content": fenetre_props_options},
-        "event": {"rect": pygame.Rect(10, 110, 80, 40), "content": fenetre_event_options},
+        "props": {"rect": pygame.Rect(110, 10, 80, 40), "content": fenetre_props_options},
+        "event": {"rect": pygame.Rect(210, 10, 80, 40), "content": fenetre_event_options},
         
     }
     print ("Boutons créés")
@@ -60,7 +60,7 @@ def creer_boutons():
 def dessiner_boutons(fenetre_de_jeu, boutons, couleurs, font, offset_x, offset_y):
     for bouton, data in boutons.items():
         rect = data["rect"].move(offset_x, offset_y)  ## Déplacer le rectangle du bouton
-        pygame.draw.rect(fenetre_de_jeu, couleurs["blue"], rect) ## Dessiner le rectangle du bouton
+        pygame.draw.rect(fenetre_de_jeu, couleurs["green"], rect) ## Dessiner le rectangle du bouton
         pygame.draw.rect(fenetre_de_jeu, couleurs["black"], rect, 2) ## Ajouter un contour noir pour rendre le bouton plus visible
         text = font.render(bouton.capitalize(), True, couleurs["white"]) ## Dessiner le texte centré dans le bouton
 
@@ -73,8 +73,8 @@ def afficher_contenu(fenetre_de_jeu, boutons, fenetre_active, couleurs, font):
     if fenetre_active in boutons:
         contenu = boutons[fenetre_active]["content"]()
         for i, (nom, valeur) in enumerate(contenu.items()):
-            text = font.render(f"{nom}: {valeur}", True, couleurs["black"])
-            fenetre_de_jeu.blit(text, (10, 150 + i * 50))  # Positionner le texte en dessous des boutons
+            text = font.render(f"{nom}: {valeur}", True, couleurs["black"]) 
+            fenetre_de_jeu.blit(text, (100, 150 + i * 50))  # Positionner le texte en dessous des boutons
 
 
 def fenetre_troops_options():

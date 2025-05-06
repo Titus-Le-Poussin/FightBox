@@ -32,11 +32,11 @@ def Ecran_principal():
     return screen
 
 def fenetre_principale(screen, couleurs):
-    """Créer et dessiner la petite fenêtre sur le côté gauche."""
     fenetre_largeur, fenetre_hauteur = 300, 900
     fenetre_x, fenetre_y = 50, 50
     fenetre_de_jeu = pygame.Surface((fenetre_largeur, fenetre_hauteur))
     fenetre_de_jeu.fill(couleurs["grey"])
+    pygame.draw.rect(fenetre_de_jeu, couleurs["black"], (0, 0, fenetre_largeur, fenetre_hauteur), 2)  
     screen.blit(fenetre_de_jeu, (fenetre_x, fenetre_y))
     return fenetre_de_jeu, fenetre_x, fenetre_y
 
@@ -60,11 +60,11 @@ def creer_boutons():
 def dessiner_boutons(fenetre_de_jeu, boutons, couleurs, font, offset_x, offset_y):
     for bouton, data in boutons.items():
         rect = data["rect"].move(offset_x, offset_y)  ## Déplacer le rectangle du bouton
-        pygame.draw.rect(fenetre_de_jeu, couleurs["blue"], data["rect"]) ## Dessiner le rectangle du bouton
-        pygame.draw.rect(fenetre_de_jeu, couleurs["black"], data["rect"], 2) ## Ajouter un contour noir pour rendre le bouton plus visible
+        pygame.draw.rect(fenetre_de_jeu, couleurs["blue"], rect) ## Dessiner le rectangle du bouton
+        pygame.draw.rect(fenetre_de_jeu, couleurs["black"], rect, 2) ## Ajouter un contour noir pour rendre le bouton plus visible
         text = font.render(bouton.capitalize(), True, couleurs["white"]) ## Dessiner le texte centré dans le bouton
 
-        text_rect = text.get_rect(center=data["rect"].center)
+        text_rect = text.get_rect(center=rect.center)
         fenetre_de_jeu.blit(text, text_rect) ## Positionner le texte au centre du bouton
 
 
@@ -78,12 +78,15 @@ def afficher_contenu(fenetre_de_jeu, boutons, fenetre_active, couleurs, font):
 
 
 def fenetre_troops_options():
+    print ("Fenetre troops options")
     return {"Barbare": 3, "Archer": 2, "Mage": 5, "Assassin": 1} 
 
 def fenetre_props_options():
+    print ("Fenetre props options")
     return {"Potion": 10, "Piège": 5, "Bouclier": 2}
 
 def fenetre_event_options():
+    print ("Fenetre event options")
     return {"Invasion": "Active", "Marché": "Ouvert", "Quête": "Disponible"}
 
 
@@ -111,8 +114,10 @@ def main():
 
         screen.fill(couleur["light_grey"])
         fenetre_de_jeu, offset_x, offset_y = fenetre_principale(screen, couleur)
-        dessiner_boutons(screen, boutons, couleur, font, offset_x, offset_y)
-        afficher_contenu(screen, boutons, fenetre_active, couleur, font)
+        dessiner_boutons(fenetre_de_jeu, boutons, couleur, font, 0, 0)
+        afficher_contenu(fenetre_de_jeu, boutons, fenetre_active, couleur, font)
+
+        screen.blit(fenetre_de_jeu, (offset_x, offset_y))  # 
 
         pygame.display.flip()
 

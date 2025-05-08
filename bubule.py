@@ -20,6 +20,7 @@ def definir_couleurs():
         "light_blue": (173, 216, 230),
         "light_green": (144, 238, 144),
         "light_grey": (211, 211, 211),
+        "CHATGPT_Le_NULLOS": (140, 200, 40)
 
     }
 # création de l'écran
@@ -42,10 +43,9 @@ def fenetre_principale(screen, couleurs):
 
 def creer_boutons():
     return { 
-        "troops": {"rect": pygame.Rect(10, 10, 80, 40), "content": fenetre_troops_options},
-        "props": {"rect": pygame.Rect(110, 10, 80, 40), "content": fenetre_props_options},
-        "event": {"rect": pygame.Rect(210, 10, 80, 40), "content": fenetre_event_options},
-        
+        "troops": {"rect": pygame.Rect(10, 10, 80, 40), "content": fenetre_troops_options, "color":"blue"},
+        "props": {"rect": pygame.Rect(110, 10, 80, 40), "content": fenetre_props_options, "color":"green"},
+        "event": {"rect": pygame.Rect(210, 10, 80, 40), "content": fenetre_event_options, "color":"red"},        
     }
     print ("Boutons créés")
 
@@ -60,7 +60,7 @@ def creer_boutons():
 def dessiner_boutons(fenetre_de_jeu, boutons, couleurs, font, offset_x, offset_y):
     for bouton, data in boutons.items():
         rect = data["rect"].move(offset_x, offset_y)  ## Déplacer le rectangle du bouton
-        pygame.draw.rect(fenetre_de_jeu, couleurs["green"], rect) ## Dessiner le rectangle du bouton
+        pygame.draw.rect(fenetre_de_jeu, couleurs[data["color"]], rect) ## Dessiner le rectangle du bouton
         pygame.draw.rect(fenetre_de_jeu, couleurs["black"], rect, 2) ## Ajouter un contour noir pour rendre le bouton plus visible
         text = font.render(bouton.capitalize(), True, couleurs["white"]) ## Dessiner le texte centré dans le bouton
 
@@ -71,15 +71,32 @@ def dessiner_boutons(fenetre_de_jeu, boutons, couleurs, font, offset_x, offset_y
 def afficher_contenu(fenetre_de_jeu, boutons, fenetre_active, couleurs, font):
     """Afficher le contenu correspondant au bouton actif."""
     if fenetre_active in boutons:
-        contenu = boutons[fenetre_active]["content"]()
+        contenu = boutons[fenetre_active]["content"](fenetre_de_jeu, couleurs, font)
         for i, (nom, valeur) in enumerate(contenu.items()):
             text = font.render(f"{nom}: {valeur}", True, couleurs["black"]) 
-            fenetre_de_jeu.blit(text, (100, 150 + i * 50))  # Positionner le texte en dessous des boutons
+            fenetre_de_jeu.blit(text, (10, 150 + i * 50))  # Positionner le texte en dessous des boutons
 
 
-def fenetre_troops_options():
+def spawner_troops(fenetre_de_jeu, couleurs, font):
+        rect = pygame.Rect(100, 10, 80, 40)
+        pygame.draw.rect(fenetre_de_jeu, couleurs["red"], rect)
+        pygame.draw.rect(fenetre_de_jeu, couleurs["black"], rect, 1)
+        for i, (nom, valeur) in enumerate(contenu.items()):
+            text = font.render("Spawn", True, couleurs["white"])
+            fenetre_de_jeu.blit(text, (100, 10 + i * 50))
+        return rect
+
+def main_spawn():
+    print ("spawn")    
+
+def fenetre_troops_options(fenetre_de_jeu, couleurs, font):
     print ("Fenetre troops options")
-    return {"Barbare": 3, "Archer": 2, "Mage": 5, "Assassin": 1} 
+    contenu = {
+       "Barbares": 0, "Archer": 0, "Mage": 0, "Assassin": 0,  
+    }
+    spawn_rect = spawner_troops(fenetre_de_jeu, couleurs, font, contenu)  # Passer 'contenu' à spawner_troops
+    return spawn_rect
+    
 
 def fenetre_props_options():
     print ("Fenetre props options")
@@ -99,6 +116,7 @@ def main():
 
     boutons = creer_boutons()
     fenetre_active = "troops"  
+    spawn_rect = None
 
     running = True
     while running:
@@ -106,6 +124,8 @@ def main():
             if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
                 running = False
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                if spawn_rect and spawn_rect.collidepoint(event.pos):
+                    main_spawn()
                 for bouton, data in boutons.items():
                     # Vérifier si un bouton a été cliqué
                     rect = data["rect"].move(offset_x, offset_y)
@@ -115,6 +135,8 @@ def main():
         screen.fill(couleur["light_grey"])
         fenetre_de_jeu, offset_x, offset_y = fenetre_principale(screen, couleur)
         dessiner_boutons(fenetre_de_jeu, boutons, couleur, font, 0, 0)
+        if fenetre_active == "troops":
+            spawn_rect = fenetre_troops_options(fenetre_de_jeu, couleur, font)
         afficher_contenu(fenetre_de_jeu, boutons, fenetre_active, couleur, font)
 
         screen.blit(fenetre_de_jeu, (offset_x, offset_y))  # 
